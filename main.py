@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi import HTTPException
 from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, Integer, String
 # Using DeclarativeBase for Python 3.13+ compatibility
@@ -66,3 +67,34 @@ def get_all_users(db: Session = Depends(get_db)):
     # The clerk grabs ALL the folders in the cabinet
     users = db.query(DBUser).all()
     return {"database_records": users}
+
+# ==========================================
+# 4. DYNAMIC ROUTES (Precision Operations)
+# ==========================================
+
+# The Targeted Megaphone (GET one specific user)
+@app.get("/users/{user_id}")
+def get_single_user(user_id: int, db: Session = Depends(get_db)):
+    # The clerk uses the index to instantly find the folder by ID
+    user = db.query(DBUser).filter(DBUser.id == user_id).first()
+    
+    # BOTTLENECK CHECK: What if the folder doesn't exist?
+    if user is None:
+        raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found in the cabinet.")
+        
+    return {"database_record": user}
+
+# The Shredder (DELETE a user)
+@app.delete("/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    # First, the clerk must find the folder
+    user = db.query(DBUser).filter(DBUser.id == user_id).first()
+    
+    if user is None:
+        raise HTTPException(status_code=404, detail="Cannot delete. User not found.")
+        
+    # The clerk destroys the folder and permanently saves the changes
+    db.delete(user)
+    db.commit()
+    
+    return {"status": "Success", "message": f"User {user_id} has been permanently deleted."}
