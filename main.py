@@ -5,29 +5,61 @@ from sqlalchemy import create_engine, Column, Integer, String
 # Using DeclarativeBase for Python 3.13+ compatibility
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session
 
+# # ==========================================
+# # 1. THE FILING CABINET SETUP (SQLAlchemy)
+# # ==========================================
+# # Create a file named 'users.db' in our folder
+# SQLALCHEMY_DATABASE_URL = "sqlite:///./users.db"
+# engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# # MODERN FIX FOR PYTHON 3.13:
+# class Base(DeclarativeBase):
+#     pass
+
+# # Define what a "Folder" looks like inside the cabinet
+# class DBUser(Base):
+#     __tablename__ = "users"
+#     id = Column(Integer, primary_key=True, index=True) # Automatically gives users ID 1, 2, 3...
+#     name = Column(String, index=True)
+#     age = Column(Integer)
+
+# # Actually build the cabinet and folders!
+# Base.metadata.create_all(bind=engine)
+
+# # Helper function to open the cabinet, do work, and lock it back up
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
+
 # ==========================================
-# 1. THE FILING CABINET SETUP (SQLAlchemy)
+# 1. THE INDUSTRIAL WAREHOUSE SETUP (PostgreSQL)
 # ==========================================
-# Create a file named 'users.db' in our folder
-SQLALCHEMY_DATABASE_URL = "sqlite:///./users.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+# Format: postgresql://<username>:<password>@<host>:<port>/<database_name>
+# Replace 'your_password' with the actual password you set on Day 2!
+
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:anitha12@localhost:5432/fastapi_db"
+
+# BOTTLENECK REMOVED: Notice we deleted `connect_args={"check_same_thread": False}`.
+# We don't need that hack anymore because Postgres is designed for massive concurrency.
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# MODERN FIX FOR PYTHON 3.13:
 class Base(DeclarativeBase):
     pass
 
-# Define what a "Folder" looks like inside the cabinet
 class DBUser(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True) # Automatically gives users ID 1, 2, 3...
+    id = Column(Integer, primary_key=True, index=True) 
     name = Column(String, index=True)
     age = Column(Integer)
 
-# Actually build the cabinet and folders!
+# This will automatically build the 'users' table inside your new Postgres warehouse
 Base.metadata.create_all(bind=engine)
 
-# Helper function to open the cabinet, do work, and lock it back up
 def get_db():
     db = SessionLocal()
     try:
