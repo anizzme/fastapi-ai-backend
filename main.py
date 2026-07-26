@@ -41,7 +41,20 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session
 # Format: postgresql://<username>:<password>@<host>:<port>/<database_name>
 # Replace 'your_password' with the actual password you set on Day 2!
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:anitha12@localhost:5432/fastapi_db"
+# --- NEW SECRETS MANAGEMENT ---
+import os
+from dotenv import load_dotenv
+
+# Load the vault
+load_dotenv()
+
+# Securely fetch the password from the .env file
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+
+# PostgreSQL is built for scale
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+# ... (the rest of your code stays exactly the same)
+
 
 # BOTTLENECK REMOVED: Notice we deleted `connect_args={"check_same_thread": False}`.
 # We don't need that hack anymore because Postgres is designed for massive concurrency.
