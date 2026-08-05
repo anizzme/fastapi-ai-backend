@@ -17,10 +17,15 @@ def fake_machine_learning_model(image: str):
     return "Defect Detected (94.8% confidence)"
 
 # 3. The ML Route
+# @router.post("/predict")
+# def run_inference(payload: InferencePayload):
+#     # Pass the data to the heavy model
+#     prediction = fake_machine_learning_model(payload.image_name)
 @router.post("/predict")
-def run_inference(payload: InferencePayload):
+async def run_inference(payload: InferencePayload):
     # Pass the data to the heavy model
     prediction = fake_machine_learning_model(payload.image_name)
+
     
     return {
         "status": "Success",
