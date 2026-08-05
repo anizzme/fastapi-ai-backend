@@ -3,7 +3,7 @@ from database import engine
 from models import Base
 
 # Import BOTH of your routers now
-from routers import users, routers
+from routers import users, predict
 
 # Create all tables in the database
 Base.metadata.create_all(bind=engine)
