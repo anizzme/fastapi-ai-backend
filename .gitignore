@@ -1,2 +1,12 @@
 __pycache__/
+*.pyc
+.venv/
+venv/
 .env
+*.db
+*.sqlite3
+.pytest_cache/
+.vscode/
+.idea/
+.DS_Store
+locust_*.csv
